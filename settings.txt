@@ -1,0 +1,8 @@
+worldWdth:15;
+worldHgth:15;
+worldBorder:24;
+squareSize:12;
+snakeLength:5;
+stepDelay:100;
+seed:9001;
+mode:0;
