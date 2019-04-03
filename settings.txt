@@ -1,7 +1,0 @@
-worldWdth:80;
-worldHgth:60;
-snakeLength:1;
-stepDelay:50;
-seed:9001;
-squareSize:12;
-windowBorder:24;
