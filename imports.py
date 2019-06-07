@@ -119,20 +119,86 @@ class GameClass:
 
 class BrainClass:
 
-    def __init__(self):
+    def __init__(self, width, height, length):
 
-        self.inputWdth = 13
-        self.inputHgth = 13
-        self.startLength = 1
-        self.lyrs = []
-        self.bestScore = 1
+        self.inputWdth = width
+        self.inputHgth = height
+        self.startLength = length
+        self.bestScore = length
+        self.avgScore = length
         self.games = 0
-        self.avgScore = 1
+        self.lyrs = []
+    # ---
+
+    def addLayer(self, nodes):
+        newLayer = []
+
+        if len(self.lyrs) == 0:
+            inputSize = self.inputHgth * self.inputWdth
+        else:
+            inputSize = len(self.lyrs[-1])
+
+        for n in range(nodes):
+            newNode = []
+            for i in range(inputSize):
+                newNode.append(0)
+            newLayer.append(newNode)
+        self.lyrs.append(newLayer)
+    # ---
+
+    def randomize(self):
+        for x in range(len(self.lyrs)):
+            for y in range(len(self.lyrs[x])):
+                for z in range(len(self.lyrs[x][y])):
+                    self.lyrs[x][y][z] = random.uniform(-1, 1)
+
+        self.games = 0
+        self.bestScore = self.startLength
+        self.avgScore = self.startLength
+    # ---
+
+    def mutate(self, percent, strength):
+        for x in range(len(self.lyrs)):
+            for y in range(len(self.lyrs[x])):
+                for z in range(len(self.lyrs[x][y])):
+                    if random.uniform(0, 1) < percent:
+                        self.lyrs[x][y][z] += random.uniform(strength, -strength)
+
+        self.games = 0
+        self.bestScore = self.startLength
+        self.avgScore = self.startLength
+    # ---
+
+    def save(self, fileName):
+        try:
+            thisFile = open(fileName, "w+")
+
+            thisFile.write(f"inputWdth:{self.inputWdth};\n")
+            thisFile.write(f"inputHgth:{self.inputHgth};\n")
+            thisFile.write(f"startLength:{self.startLength};\n")
+            thisFile.write(f"gamesPlayed:{self.games};\n")
+            thisFile.write(f"bestScore:{self.bestScore};\n")
+            thisFile.write(f"avgScore:{self.avgScore};\n")
+
+            layercount = len(self.lyrs)
+            thisFile.write(f"layers:{layercount};\n")
+            for inc in range(layercount):
+                thisFile.write(f"lyr{inc}:{self.lyrs[inc]};\n")
+
+            thisFile.close()
+
+            print(f"brain saved to file {fileName}")
+            return True
+        except:
+
+            print(f"writing to file {fileName} failed.", sys.exc_info())
+            return False
+    # ---
 
     def evaluateGame(self, thisGame):
 
         if self.bestScore < thisGame.score:
-            print(f"new highScore in game {self.games}!")
+            #print(f"new highScore in game {self.games}!")
             self.bestScore = thisGame.score
 
         s = self.avgScore * self.games
@@ -140,7 +206,7 @@ class BrainClass:
 
         self.avgScore += y
         self.games += 1
-
+    # ---
 
     def think(self, thisGame):
 
@@ -173,21 +239,7 @@ class BrainClass:
 
         index_max = max(range(len(outputs)), key=outputs.__getitem__)
         thisGame.headDir = index_max
-
-    def addLayer(self, nodes):
-        newLayer = []
-
-        if len(self.lyrs) == 0:
-            inputSize = self.inputHgth * self.inputWdth
-        else:
-            inputSize = len(self.lyrs[-1])
-
-        for n in range(nodes):
-            newNode = []
-            for i in range(inputSize):
-                newNode.append(0)
-            newLayer.append(newNode)
-        self.lyrs.append(newLayer)
+    # ---
 
     def load(self, fileName):
 
@@ -228,42 +280,3 @@ class BrainClass:
 
             thisLyr = [[float(i) for i in x.strip(" []").split(",")] for x in arrayString.strip('[]').split("],")]
             self.lyrs.append(thisLyr)
-
-
-    def save(self, fileName):
-
-        # try to create brain.txt
-        try:
-            thisFile = open(fileName, "w+")
-
-            thisFile.write(f"inputWdth:{self.inputWdth};\n")
-            thisFile.write(f"inputHgth:{self.inputHgth};\n")
-            thisFile.write(f"startLength:{self.startLength};\n")
-            thisFile.write(f"gamesPlayed:{self.games};\n")
-            thisFile.write(f"bestScore:{self.bestScore};\n")
-            thisFile.write(f"avgScore:{self.avgScore};\n")
-
-            layercount = len(self.lyrs)
-            thisFile.write(f"layers:{layercount};\n")
-            for inc in range(layercount):
-                thisFile.write(f"lyr{inc}:{self.lyrs[inc]};\n")
-
-            thisFile.close()
-
-            print(f"brain saved in {fileName}")
-
-        except:
-
-            exit(f"writing to {fileName} failed.", sys.exc_info())
-        # ---
-
-
-    def randomize(self):
-        for x in range(len(self.lyrs)):
-            for y in range(len(self.lyrs[x])):
-                for z in range(len(self.lyrs[x][y])):
-                    self.lyrs[x][y][z] = random.uniform(-1, 1)
-        # ---
-        print("brain randomized")
-
-

@@ -24,7 +24,7 @@ pygame.init()
 pygame.font.init()
 myfont = pygame.font.SysFont('Verdana', 18)
 textOffset = worldWdth * squareSize + worldBorder * 2
-window = pygame.display.set_mode((textOffset + 300, worldHgth * squareSize + worldBorder * 2))
+window = pygame.display.set_mode((textOffset + 350, worldHgth * squareSize + worldBorder * 2), pygame.RESIZABLE)
 pygame.display.set_caption("Snake with human input")
 # ---
 
